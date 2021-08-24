@@ -1,0 +1,111 @@
+trigger:
+  - master
+
+variables:
+  githubServiceConnection: 'github.com_jasonWoodman'
+  keyVaultServiceConnection: 'minesweeper-dev-keyvault-reader'
+  keyVaultName: 'minesweeper-dev'
+  dashReleaseTag: "v0.1.0"
+  trawlerReleaseTag: "v0.0.7"
+  rabbitmqReleaseTag: "v1.0.0"
+  postgresReleaseTag: "v1.0.0"
+  chartOldTag: "0.1.1"
+  chartReleaseTag: "0.1.5"
+  chartAppTag: "0.0.1"
+
+pool:
+  vmImage: 'ubuntu-latest' # uncomment this and comment out 4 lines below to use Azure hosted pool
+  # name: Default
+  # demands:
+  # - Docker
+  # - Ubuntu
+
+resources:
+  repositories:
+  - repository: charts
+    type: github
+    endpoint: 'github.com_jasonWoodman'
+    name: m9sweeper/kube-hunter
+
+stages:
+- stage: Release
+  condition: and(succeeded(), not(startsWith(variables['Build.SourceBranch'], 'refs/pull/')))
+  displayName: Pull all repos
+  jobs:
+  - deployment: Release
+    displayName: Release
+    environment: 'dev'
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+            - checkout: self
+            - checkout: charts
+              displayName: Checkout All Repos
+            - script: dir $(Build.SourcesDirectory)
+              displayName: List contents of a folder
+
+
+            - task: CmdLine@2
+              displayName: Create New Branch in public chart repo
+              inputs:
+                script: |
+                  cd $(Build.SourcesDirectory)/kube-hunter
+                  git checkout -b release-$(chartReleaseTag)
+
+            - task: CopyFiles@2
+              inputs:
+                SourceFolder: $(Build.SourcesDirectory)/helm-kube-hunter/
+                contents: '**'
+                targetFolder:  $(Build.SourcesDirectory)/kube-hunter/
+              displayName: Copy Values File from Internal Repo
+
+            - task: CmdLine@2
+              displayName: List Public repo charts
+              inputs:
+                script: |
+                  echo "list all charts"
+                  ls $(Build.SourcesDirectory)/kube-hunter/
+                  pwd
+                  ls -ltr $(Build.SourcesDirectory)
+
+            - task: AzureKeyVault@1
+              inputs:
+                azureSubscription: $(keyVaultServiceConnection)
+                KeyVaultName: $(keyVaultName)
+                SecretsFilter: |
+                  minesweeper-git-email,
+                  minesweeper-git-user,
+                  minesweeper-git-pat-token
+              displayName: 'Download $(keyVaultName) to job'
+
+            - task: CmdLine@2
+              env:
+                GIT_AUTH: 'github.com_jasonWoodman'
+                GIT_AUTH_USR: $(minesweeper-git-user)
+                GIT_EMAIL: $(minesweeper-git-email)
+                GIT_PAT_TOKEN: $(minesweeper-git-pat-token)
+              displayName: Build a package of helm chart
+              inputs:
+                script: |
+                  cd $(Build.SourcesDirectory)/kube-hunter
+                  echo "check directory"
+                  pwd
+                  echo "git status"
+                  git status   
+                  git checkout release-$(chartReleaseTag)
+                  echo "check git status"
+                  git status
+                  echo "add credentials"
+                  git config --local user.name ${GIT_AUTH_USR}
+                  git config --local user.email ${GIT_EMAIL}
+                  echo "run git add"
+                  git add .
+                  git commit -m "release-$(chartReleaseTag)"
+                  git checkout master
+                  git merge "release-$(chartReleaseTag)"
+                  git remote remove origin
+                  git remote add origin https://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@github.com/m9sweeper/kube-hunter.git
+                  git push origin master
+                  git remote remove origin
+                  git config --local --remove-section credential
