@@ -23,6 +23,6 @@ entries:
     name: minesweeper
     type: application
     urls:
-    - kube-hunter-0.0.2.tgz
-    version: 0.0.2
+    - kube-hunter-0.0.1.tgz
+    version: 0.0.1
 generated: "2021-08-08T20:29:03.986622-05:00"

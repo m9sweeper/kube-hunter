@@ -18,7 +18,8 @@ customArguments: []
 pod:
   annotations: {}
 
-dispatchUrl: "https://dev-minesweeper.intelletive.com/api/kubehunter/hunter/52/798b680a-5dd4-4303-b4e1-a24a4b4e9ae5"
+#### URL of your kube-hunter api of app
+dispatchUrl: ""
 
 
 image:
