@@ -3,7 +3,7 @@ name: kube-hunter
 description: A Helm chart for the m9sweeper hunter and API
 type: application
 appVersion: 0.6.1
-version: 0.0.4
+version: 0.0.5
 home: https://github.com/m9sweeper/kube-hunter
 sources:
   - https://github.com/m9sweeper/kube-hunter

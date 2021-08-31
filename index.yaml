@@ -2,7 +2,7 @@ apiVersion: v1
 entries:
   kube-hunter:
   - apiVersion: v2
-    appVersion: 0.0.4
+    appVersion: 0.0.5
     created: "2021-08-08T20:29:03.989881-05:00"
     description: m9sweeper secures your kubernetes cluster and images.  The chart
       will deploy kube-hunter
@@ -25,6 +25,6 @@ entries:
     name: minesweeper
     type: application
     urls:
-    - kube-hunter-0.0.4.tgz
-    version: 0.0.4
+    - kube-hunter-0.0.5.tgz
+    version: 0.0.5
 generated: "2021-08-08T20:29:03.986622-05:00"
