@@ -2,8 +2,11 @@ apiVersion: v2
 name: kube-hunter
 description: A Helm chart for the m9sweeper hunter and API
 type: application
-version: 0.0.1
-appVersion: 0.0.1
+appVersion: 0.6.1
+version: 0.0.4
+home: https://github.com/m9sweeper/kube-hunter
+sources:
+  - https://github.com/m9sweeper/kube-hunter
 maintainers:
   - name: Intelletive
     email: notify@intelletive.com
