@@ -13,9 +13,6 @@ metadata:
 {{- with .Values.pod.annotations }}
   {{ toYaml . | indent 4 }}
 {{- end }}
-    "helm.sh/hook": post-install,post-upgrade
-    "helm.sh/hook-weight": "2"
-    "helm.sh/hook-delete-policy": before-hook-creation
 spec:
   template:
     spec:
